@@ -11,6 +11,9 @@ program day5_fortran
     integer, dimension(:), allocatable :: bytes_back
     integer bytes_size
     integer bytes_end
+    integer, dimension(5) :: intbytes
+    integer, external :: read_characters
+    integer :: c1,c2,c3,c4
 
     INPUT_FD = 9
     io_status = 42
@@ -32,6 +35,18 @@ program day5_fortran
     write(*, *) read_value
     allocate(bytes(8))
 
+    c1 = intbytes(0)
+    c2 = intbytes(1)
+    c3 = intbytes(2)
+    c4 = intbytes(3)
+
+    intbytes = read_characters(read_value)
+    write(*, *) "Bytes: "
+    write(*, *) c1
+    write(*, *) c2
+    write(*, *) c3
+    write(*, *) c4
+    write(*, *)
     c = mod(read_value, 256)
     bytes(1) = c
     read_value = read_value - c
@@ -43,6 +58,7 @@ program day5_fortran
 end program
 
 subroutine shift_left_8(val)
+    implicit none
     integer, intent(inout) :: val
     integer :: i
     i = mod(val, 256)
@@ -58,13 +74,13 @@ end function
 
 function read_characters(i) result(cd)
     integer, intent(in) :: i
-    integer, dimension(5) :: cd
-    
+    integer, dimension(5), intent(out) :: cd
+
     cd(0) = last_ubyte(i)
-    shift_left_8(i)
+    call shift_left_8(i)
     cd(1) = last_ubyte(i)
-    shift_left_8(i)
+    call shift_left_8(i)
     cd(2) = last_ubyte(i)
-    shift_left_8(i)
+    call shift_left_8(i)
     cd(3) = last_byte(i)
 end function read_characters
