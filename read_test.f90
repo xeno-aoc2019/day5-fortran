@@ -14,7 +14,7 @@ program read_test
     integer, parameter :: INST_JT = 5
     integer, parameter :: INST_JF = 6
     integer, parameter :: INST_LT = 7
-    integer, parameter :: INST_GT = 8
+    integer, parameter :: INST_EQ = 8
     integer, parameter :: INST_HALT = 99
 
     integer :: inst, r_ip, r_halt, r_input, r_output, pm1, pm2, pm3, arg1, arg2, arg3
@@ -55,7 +55,7 @@ program read_test
 
     r_ip = 0
     r_halt = 0
-    r_input = 1
+    r_input = 5
     r_output = -1
 
     do while (r_halt == 0)
@@ -103,17 +103,69 @@ program read_test
             r_output = program(arg1 + 1)
             r_ip = r_ip + 2
         elseif (inst == INST_JT) then
-            write(*, *) "NOT IMPLEMENTED", inst
-            r_halt = 1
+            arg1 = program(r_ip + 2)
+            if (pm1 == 0) then
+                arg1 = program(arg1 + 1)
+            end if
+            arg2 = program(r_ip + 3)
+            if (pm2 == 0) then
+                arg2 = program(arg2 + 1)
+            end if
+            if (arg1 /= 0) then
+                r_ip = arg2
+            else
+                r_ip = r_ip + 3
+            end if
+            write(*, *) "JT ", arg1, arg2
         elseif (inst == INST_JF) then
-            write(*, *) "NOT IMPLEMENTED", inst
-            r_halt = 1
+            arg1 = program(r_ip + 2)
+            if (pm1 == 0) then
+                arg1 = program(arg1 + 1)
+            end if
+            arg2 = program(r_ip + 3)
+            if (pm2 == 0) then
+                arg2 = program(arg2 + 1)
+            end if
+            if (arg1 == 0) then
+                r_ip = arg2
+            else
+                r_ip = r_ip + 3
+            end if
+            write(*, *) "JF ", arg1, arg2
         elseif (inst == INST_LT) then
-            write(*, *) "NOT IMPLEMENTED", inst
-            r_halt = 1
+            arg1 = program(r_ip + 2)
+            if (pm1 == 0) then
+                arg1 = program(arg1 + 1)
+            end if
+            arg2 = program(r_ip + 3)
+            if (pm2 == 0) then
+                arg2 = program(arg2 + 1)
+            end if
+            arg3 = program(r_ip + 4)
+            write(*, *) "LT ", arg3, arg1, arg2
+            if (arg1 < arg2) then
+                program(arg3 + 1) = 1
+            else
+                program(arg3 + 1) = 0
+            end if
+            r_ip = r_ip + 4
         elseif (inst == INST_EQ) then
-            write(*, *) "NOT IMPLEMENTED", inst
-            r_halt = 1
+            arg1 = program(r_ip + 2)
+            if (pm1 == 0) then
+                arg1 = program(arg1 + 1)
+            end if
+            arg2 = program(r_ip + 3)
+            if (pm2 == 0) then
+                arg2 = program(arg2 + 1)
+            end if
+            arg3 = program(r_ip + 4)
+            write(*, *) "EQ ", arg3, arg1, arg2
+            if (arg1 == arg2) then
+                program(arg3 + 1) = 1
+            else
+                program(arg3 + 1) = 0
+            end if
+            r_ip = r_ip + 4
         elseif (inst == INST_HALT) then
             write(*, *) "HALT"
             r_halt = 1
@@ -123,6 +175,6 @@ program read_test
         end if
     end do
 
-    write(*,*) "OUTPUT: ", r_output
+    write(*, *) "OUTPUT: ", r_output
 
 end program read_test
